@@ -1,18 +1,34 @@
-# Sistem Kasir Backend API
+# 🛒 Sistem Kasir Backend API
 
-Backend REST API untuk aplikasi kasir (Point of Sale/POS) yang dibangun menggunakan Express.js, Prisma ORM, Neon PostgreSQL, JWT Authentication, dan Zod Validation.
+REST API untuk aplikasi **Point of Sale (POS)** yang dibangun menggunakan **Express.js**, **Prisma ORM**, **PostgreSQL (NeonDB)**, **JWT Authentication**, dan **Zod Validation**.
 
-## Fitur
+Proyek ini dirancang untuk mengelola autentikasi pengguna, manajemen produk, kategori, serta transaksi penjualan dengan pengurangan stok otomatis dan sistem otorisasi berbasis role.
 
-### Authentication
+---
+
+## 🚀 Tech Stack
+
+* Node.js
+* Express.js
+* Prisma ORM
+* PostgreSQL (NeonDB)
+* JWT Authentication
+* Zod Validation
+* Bcrypt
+
+---
+
+## ✨ Features
+
+### 🔐 Authentication
 
 * Register User
 * Login User
 * JWT Authentication
-* Role Based Access Control (Admin & Kasir)
 * Get Current User (`/me`)
+* Role Based Access Control (Admin & Kasir)
 
-### Category Management
+### 📂 Category Management
 
 * Create Category
 * Get All Categories
@@ -20,7 +36,7 @@ Backend REST API untuk aplikasi kasir (Point of Sale/POS) yang dibangun mengguna
 * Update Category
 * Delete Category
 
-### Product Management
+### 📦 Product Management
 
 * Create Product
 * Get All Products
@@ -28,52 +44,76 @@ Backend REST API untuk aplikasi kasir (Point of Sale/POS) yang dibangun mengguna
 * Update Product
 * Soft Delete Product
 * Search Product
-* Pagination Product
+* Pagination
 
-### Transaction Management
+### 💳 Transaction Management
 
 * Create Transaction (Checkout)
 * Automatic Stock Reduction
 * Transaction History
 * Transaction Detail
-* Transaction Filtering
+* Filter Transaction by User
+* Filter Transaction by Date
 
-## Tech Stack
+---
 
-* Node.js
-* Express.js
-* Prisma ORM
-* PostgreSQL (NeonDB)
-* JWT
-* Zod
-* Bcrypt
+## 📁 Project Structure
 
-## Installation
-
-Clone repository:
-
-```bash
-git clone <repository-url>
-cd sistem_kasir
+```text
+src
+├── controllers
+├── middlewares
+├── routes
+├── services
+├── validations
+├── lib
+└── app.js
 ```
 
-Install dependencies:
+### Folder Description
+
+| Folder      | Description                            |
+| ----------- | -------------------------------------- |
+| controllers | Handle request & response              |
+| services    | Business logic                         |
+| routes      | API route definitions                  |
+| middlewares | Authentication & authorization         |
+| validations | Request validation using Zod           |
+| lib         | Shared utilities (Prisma Client, etc.) |
+
+---
+
+## ⚙️ Installation
+
+### Clone Repository
+
+```bash
+git clone https://github.com/your-username/backend-sistem-kasir.git
+
+cd backend-sistem-kasir
+```
+
+### Install Dependencies
 
 ```bash
 npm install
 ```
 
-## Environment Variables
+---
 
-Buat file `.env`
+## 🔑 Environment Variables
+
+Create a `.env` file:
 
 ```env
-DATABASE_URL=your_neon_database_url
-JWT_SECRET=your_jwt_secret
+DATABASE_URL=your_database_url
+JWT_SECRET=your_secret_key
 PORT=3000
 ```
 
-## Prisma Setup
+---
+
+## 🗄️ Database Setup
 
 Generate Prisma Client:
 
@@ -81,31 +121,45 @@ Generate Prisma Client:
 npx prisma generate
 ```
 
-Push schema ke database:
+Push schema to database:
 
 ```bash
 npx prisma db push
 ```
 
-## Run Application
+---
 
-Development:
+## ▶️ Running Application
+
+Development Mode:
 
 ```bash
 npm run dev
 ```
 
-Production:
+Production Mode:
 
 ```bash
 npm start
 ```
 
-## Authentication
+Server will run on:
 
-### Register
+```text
+http://localhost:3000
+```
 
-POST `/api/auth/register`
+---
+
+# 🔐 Authentication
+
+## Register
+
+**POST**
+
+```http
+/api/auth/register
+```
 
 Request Body:
 
@@ -117,9 +171,15 @@ Request Body:
 }
 ```
 
-### Login
+---
 
-POST `/api/auth/login`
+## Login
+
+**POST**
+
+```http
+/api/auth/login
+```
 
 Request Body:
 
@@ -138,43 +198,49 @@ Response:
 }
 ```
 
-Gunakan token pada setiap endpoint yang membutuhkan autentikasi:
+Use token for protected endpoints:
 
 ```http
 Authorization: Bearer <token>
 ```
 
-## Product Endpoint
+---
 
-### Get Products
+# 📦 Product Endpoints
+
+## Get Products
 
 ```http
 GET /api/products
 ```
 
-### Search Product
+## Search Product
 
 ```http
 GET /api/products?search=indomie
 ```
 
-### Pagination
+## Pagination
 
 ```http
 GET /api/products?page=1&limit=10
 ```
 
-### Search + Pagination
+## Search + Pagination
 
 ```http
 GET /api/products?search=indomie&page=1&limit=10
 ```
 
-## Transaction Endpoint
+---
 
-### Create Transaction
+# 💳 Transaction Endpoints
 
-POST `/api/transactions`
+## Create Transaction
+
+```http
+POST /api/transactions
+```
 
 Request Body:
 
@@ -184,100 +250,123 @@ Request Body:
     {
       "productId": "PRODUCT_ID",
       "quantity": 2
-    },
-    {
-      "productId": "PRODUCT_ID",
-      "quantity": 1
     }
   ]
 }
 ```
 
-### Get All Transactions
+---
+
+## Get All Transactions
 
 ```http
 GET /api/transactions
 ```
 
-### Filter By User
+---
+
+## Filter By User
 
 ```http
 GET /api/transactions?userId=USER_ID
 ```
 
-### Filter By Date
+---
+
+## Filter By Date
 
 ```http
 GET /api/transactions?date=2026-06-01
 ```
 
-### Get Transaction Detail
+---
+
+## Get Transaction Detail
 
 ```http
 GET /api/transactions/:id
 ```
 
-## Business Rules
+---
 
-### Product Soft Delete
+# 📋 Business Rules
 
-Produk tidak benar-benar dihapus dari database. Sistem menggunakan soft delete dengan field:
+## Soft Delete Product
 
-```txt
+Products are not permanently removed from the database.
+
+Field used:
+
+```text
 deletedAt
 ```
 
-Produk yang telah dihapus:
+Deleted products:
 
-* Tidak muncul pada daftar produk
-* Tidak dapat digunakan dalam transaksi
-* Riwayat transaksi tetap aman
+* Will not appear in product listings
+* Cannot be used in transactions
+* Existing transaction history remains intact
 
-### Stock Management
+---
 
-Saat transaksi berhasil:
+## Stock Management
 
-```txt
+When a transaction succeeds:
+
+```text
 Stock = Stock - Quantity
 ```
 
-Jika stok tidak mencukupi:
+If stock is insufficient:
 
-```txt
+```text
 Transaction Failed
 ```
 
-### Database Transaction
+---
 
-Checkout menggunakan Prisma Transaction:
+## Atomic Checkout Process
 
-```js
+Checkout uses Prisma Transaction:
+
+```javascript
 prisma.$transaction()
 ```
 
-Sehingga seluruh proses checkout bersifat atomic:
+Operations executed atomically:
 
-* Simpan Transaction
-* Simpan Transaction Item
-* Kurangi Stock
+* Create Transaction
+* Create Transaction Items
+* Update Product Stock
 
-Jika salah satu gagal maka seluruh proses dibatalkan.
+If one operation fails, all changes are rolled back.
 
-## Project Structure
+---
 
-```txt
-src
-├── controllers
-├── middlewares
-├── routes
-├── services
-├── validations
-├── lib
-└── app.js
-```
+# 📌 Future Improvements
 
-## Author
+* Dashboard Analytics
+* Sales Reports
+* Product Images Upload
+* Barcode Scanner Integration
+* Unit Testing
+* API Documentation with Swagger
+* Docker Support
 
-Adi Tegar Setiawan
+---
 
-Backend REST API Project untuk pembelajaran Express.js, Prisma ORM, PostgreSQL, dan Backend Development.
+# 👨‍💻 Author
+
+**Adi Tegar Setiawan**
+
+Backend Developer Enthusiast focused on:
+
+* Express.js
+* Node.js
+* PostgreSQL
+* Prisma ORM
+* REST API Development
+
+---
+
+⭐ If you find this project useful, feel free to give it a star.
