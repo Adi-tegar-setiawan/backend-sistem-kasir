@@ -1,0 +1,283 @@
+# Sistem Kasir Backend API
+
+Backend REST API untuk aplikasi kasir (Point of Sale/POS) yang dibangun menggunakan Express.js, Prisma ORM, Neon PostgreSQL, JWT Authentication, dan Zod Validation.
+
+## Fitur
+
+### Authentication
+
+* Register User
+* Login User
+* JWT Authentication
+* Role Based Access Control (Admin & Kasir)
+* Get Current User (`/me`)
+
+### Category Management
+
+* Create Category
+* Get All Categories
+* Get Category By ID
+* Update Category
+* Delete Category
+
+### Product Management
+
+* Create Product
+* Get All Products
+* Get Product By ID
+* Update Product
+* Soft Delete Product
+* Search Product
+* Pagination Product
+
+### Transaction Management
+
+* Create Transaction (Checkout)
+* Automatic Stock Reduction
+* Transaction History
+* Transaction Detail
+* Transaction Filtering
+
+## Tech Stack
+
+* Node.js
+* Express.js
+* Prisma ORM
+* PostgreSQL (NeonDB)
+* JWT
+* Zod
+* Bcrypt
+
+## Installation
+
+Clone repository:
+
+```bash
+git clone <repository-url>
+cd sistem_kasir
+```
+
+Install dependencies:
+
+```bash
+npm install
+```
+
+## Environment Variables
+
+Buat file `.env`
+
+```env
+DATABASE_URL=your_neon_database_url
+JWT_SECRET=your_jwt_secret
+PORT=3000
+```
+
+## Prisma Setup
+
+Generate Prisma Client:
+
+```bash
+npx prisma generate
+```
+
+Push schema ke database:
+
+```bash
+npx prisma db push
+```
+
+## Run Application
+
+Development:
+
+```bash
+npm run dev
+```
+
+Production:
+
+```bash
+npm start
+```
+
+## Authentication
+
+### Register
+
+POST `/api/auth/register`
+
+Request Body:
+
+```json
+{
+  "username": "adi",
+  "email": "adi@example.com",
+  "password": "password123"
+}
+```
+
+### Login
+
+POST `/api/auth/login`
+
+Request Body:
+
+```json
+{
+  "email": "adi@example.com",
+  "password": "password123"
+}
+```
+
+Response:
+
+```json
+{
+  "token": "jwt_token"
+}
+```
+
+Gunakan token pada setiap endpoint yang membutuhkan autentikasi:
+
+```http
+Authorization: Bearer <token>
+```
+
+## Product Endpoint
+
+### Get Products
+
+```http
+GET /api/products
+```
+
+### Search Product
+
+```http
+GET /api/products?search=indomie
+```
+
+### Pagination
+
+```http
+GET /api/products?page=1&limit=10
+```
+
+### Search + Pagination
+
+```http
+GET /api/products?search=indomie&page=1&limit=10
+```
+
+## Transaction Endpoint
+
+### Create Transaction
+
+POST `/api/transactions`
+
+Request Body:
+
+```json
+{
+  "items": [
+    {
+      "productId": "PRODUCT_ID",
+      "quantity": 2
+    },
+    {
+      "productId": "PRODUCT_ID",
+      "quantity": 1
+    }
+  ]
+}
+```
+
+### Get All Transactions
+
+```http
+GET /api/transactions
+```
+
+### Filter By User
+
+```http
+GET /api/transactions?userId=USER_ID
+```
+
+### Filter By Date
+
+```http
+GET /api/transactions?date=2026-06-01
+```
+
+### Get Transaction Detail
+
+```http
+GET /api/transactions/:id
+```
+
+## Business Rules
+
+### Product Soft Delete
+
+Produk tidak benar-benar dihapus dari database. Sistem menggunakan soft delete dengan field:
+
+```txt
+deletedAt
+```
+
+Produk yang telah dihapus:
+
+* Tidak muncul pada daftar produk
+* Tidak dapat digunakan dalam transaksi
+* Riwayat transaksi tetap aman
+
+### Stock Management
+
+Saat transaksi berhasil:
+
+```txt
+Stock = Stock - Quantity
+```
+
+Jika stok tidak mencukupi:
+
+```txt
+Transaction Failed
+```
+
+### Database Transaction
+
+Checkout menggunakan Prisma Transaction:
+
+```js
+prisma.$transaction()
+```
+
+Sehingga seluruh proses checkout bersifat atomic:
+
+* Simpan Transaction
+* Simpan Transaction Item
+* Kurangi Stock
+
+Jika salah satu gagal maka seluruh proses dibatalkan.
+
+## Project Structure
+
+```txt
+src
+├── controllers
+├── middlewares
+├── routes
+├── services
+├── validations
+├── lib
+└── app.js
+```
+
+## Author
+
+Adi Tegar Setiawan
+
+Backend REST API Project untuk pembelajaran Express.js, Prisma ORM, PostgreSQL, dan Backend Development.
